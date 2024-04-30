@@ -20,8 +20,9 @@ function App() {
       console.log(claim)
       console.log(ingredients)
 
-      const apiUrl = `http://172.31.10.130:8081/claims/analyze?claim=${claim}&ingredients=${ingredients}`;
+      const apiUrl = `http://3.111.65.97:8081/claims/analyze?claim=${claim}&ingredients=${ingredients}`;
       setMessage("Request Submitted. Analyzing...");
+      console.log(`Api command sent to ${apiUrl}`)
       
       const response = await fetch(apiUrl)
       setMessage("Response Received");
