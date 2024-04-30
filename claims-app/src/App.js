@@ -28,8 +28,6 @@ function App() {
       setMessage("Response Received");
       if (response.status === 200) {
         console.log("Successfully Recieved Response")
-        setClaim("");
-        setIngredients("");
         let respData = await response.text()
         let jsondata = JSON.parse(JSON.parse(respData)) //TODO: Fi x double parsing needed
   
