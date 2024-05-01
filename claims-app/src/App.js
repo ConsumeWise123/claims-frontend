@@ -20,11 +20,18 @@ function App() {
       console.log(claim)
       console.log(ingredients)
 
-      const apiUrl = `https://consumewise.peopleplus.ai:8081/claims/analyze?claim=${claim}&ingredients=${ingredients}`;
+      const apiUrl = `http://consumewise.peopleplus.ai:8081/claims/analyze?claim=${claim}&ingredients=${ingredients}`;
       setMessage("Request Submitted. Analyzing...");
       // console.log(`Api command sent to ${apiUrl}`)
       
-      const response = await fetch(apiUrl)
+      const response = await fetch(apiUrl,{
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json',
+            // Additional headers if needed
+        },
+    })
       setMessage("Response Received");
       if (response.status === 200) {
         console.log("Successfully Recieved Response")
