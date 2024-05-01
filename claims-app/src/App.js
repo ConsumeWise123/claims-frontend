@@ -20,7 +20,7 @@ function App() {
       console.log(claim)
       console.log(ingredients)
 
-      const apiUrl = `http://consumewise.peopleplus.ai:8081/claims/analyze?claim=${claim}&ingredients=${ingredients}`;
+      const apiUrl = `https://consumewise.peopleplus.ai:8081/claims/analyze?claim=${claim}&ingredients=${ingredients}`;
       setMessage("Request Submitted. Analyzing...");
       // console.log(`Api command sent to ${apiUrl}`)
       
@@ -37,6 +37,7 @@ function App() {
         setVerdictData(jsondata);
         }
         else {
+          console.log(response.status)
           setMessage("Some error occured");
         }
 
