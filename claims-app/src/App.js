@@ -4,6 +4,11 @@ import './App.css';
 import './Tabs.css';
 import Content from './ContentTab';
 
+import ReactGA from 'react-ga';
+
+const TRACKING_ID = "UA-91769592-1";
+ReactGA.initialize(TRACKING_ID);
+
 function App() {
   const [claim, setClaim] = useState("");
   const [ingredients, setIngredients] = useState("");
