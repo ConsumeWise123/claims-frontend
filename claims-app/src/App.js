@@ -1,26 +1,42 @@
 import logo from './peopleplusai.png';
-import { useState } from "react";
+import { useState, version } from "react";
 import './App.css';
 import './Tabs.css';
 import Content from './ContentTab';
+import Select from "react-dropdown-select"
 
 function App() {
+
+  const options = [
+    {value: 'english', text: 'English'},
+    {value: 'hindi', text: 'Hindi'},
+    {value: 'marathi', text: 'Marathi'}
+  ];
+
   const [claim, setClaim] = useState("");
   const [ingredients, setIngredients] = useState("");
   const [message, setMessage] = useState("")
+  const [translationMessage, setTranslationMessage] = useState("")
   const [verdictData, setVerdictData] = useState({"verdict":"Please provide input",
   "why":["Please provide input"],
   "detailed_analysis":"Please provide input"})
+
+  const [verdictEnglishData, setVerdictEnglishData] = useState({"verdict":"Please provide input",
+  "why":["Please provide input"],
+  "detailed_analysis":"Please provide input"})
   const [activeContentIndex, setActiveContentIndex] = useState("verdict");
+  const [langSelected, setLangSelected] = useState("English");
   
   let handleSubmit = async (e) => {
     e.preventDefault();
+    setLangSelected("english")
     try {
       console.log("Sending Request to Backend Claims/Analyze");
       console.log(claim)
       console.log(ingredients)
-
-      const apiUrl = `https://consumewise.peopleplus.ai:8081/claims/analyze?claim=${claim}&ingredients=${ingredients}`;
+      // let endpoint = "https://consumewise.peopleplus.ai"
+      let endpoint = "http://localhost"
+      const apiUrl = `${endpoint}:8081/claims/analyze?claim=${claim}&ingredients=${ingredients}`;
       setMessage("Request Submitted. Analyzing...");
       // console.log(`Api command sent to ${apiUrl}`)
       
@@ -42,6 +58,7 @@ function App() {
         console.log("Setting Message")
         console.log(jsondata)
         setVerdictData(jsondata);
+        setVerdictEnglishData(jsondata);
         }
         else {
           console.log(response.status)
@@ -53,6 +70,45 @@ function App() {
       console.log(err);
     }
   };
+
+  let handleLangChange = async (event)  => {
+    console.log(event.target.value);
+    setLangSelected(event.target.value);
+
+    if(event.target.value === "english"){
+      setVerdictData(verdictEnglishData)
+    }
+
+    try {
+      console.log(`Sending Request to Backend Translate ${langSelected}`);
+      // let endpoint = "https://consumewise.peopleplus.ai"
+      let endpoint = "http://localhost"
+      const apiTranslateUrl = `${endpoint}:8081/translate/indic?input_val=${JSON.stringify(verdictData)}&language=${event.target.value}`;
+      setTranslationMessage("Translation Request Submitted. Translating ...");
+      const responseWhy = await fetch(apiTranslateUrl,{
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json',
+            // Additional headers if needed
+        },
+    })
+
+    let respData = await responseWhy.text()
+    console.log(JSON.parse(respData))
+    let jsonTranslateData = JSON.parse(JSON.parse(respData))
+    
+    setVerdictData(jsonTranslateData);
+    console.log(`Post setup ${langSelected}`)  
+      
+
+    } catch (err) {
+      setTranslationMessage("Translation Error Occurred");
+      console.log(err);
+    }
+    setTranslationMessage("Translated Successfully.")
+  };
+
 
   return (
     <div className="App">
@@ -106,6 +162,17 @@ function App() {
           jsonData={verdictData}
           />
           </ul>
+        </div>
+        <div>
+
+        <select value={langSelected} onChange={handleLangChange}>
+        {options.map(option => (
+          <option key={option.value} value={option.value}>
+            {option.text}
+          </option>
+        ))}
+      </select>
+      <div className="translatioMessage">{translationMessage ? <p>{translationMessage}</p> : null}</div>
         </div>
       </div>
       </header>
