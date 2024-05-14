@@ -26,6 +26,8 @@ function App() {
   "detailed_analysis":"Please provide input"})
   const [activeContentIndex, setActiveContentIndex] = useState("verdict");
   const [langSelected, setLangSelected] = useState("English");
+
+  const [isDisabled, setIsDisabled] = useState(false);
   
   let handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,6 +61,7 @@ function App() {
         console.log(jsondata)
         setVerdictData(jsondata);
         setVerdictEnglishData(jsondata);
+        useState(true);
         }
         else {
           console.log(response.status)
@@ -165,7 +168,7 @@ function App() {
         </div>
         <div>
 
-        <select value={langSelected} onChange={handleLangChange}>
+        <select value={langSelected} onChange={handleLangChange} disabled={isDisabled}>
         {options.map(option => (
           <option key={option.value} value={option.value}>
             {option.text}
