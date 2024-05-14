@@ -27,8 +27,10 @@ function App() {
   const [activeContentIndex, setActiveContentIndex] = useState("verdict");
   const [langSelected, setLangSelected] = useState("English");
 
-  const [isDisabled, setIsDisabled] = useState(false);
-  
+  const [isDisabled, setIsDisabled] = useState(true);
+  let endpoint = "https://consumewise.peopleplus.ai"
+  // let endpoint = "http://localhost"
+
   let handleSubmit = async (e) => {
     e.preventDefault();
     setLangSelected("english")
@@ -36,8 +38,6 @@ function App() {
       console.log("Sending Request to Backend Claims/Analyze");
       console.log(claim)
       console.log(ingredients)
-      // let endpoint = "https://consumewise.peopleplus.ai"
-      let endpoint = "http://localhost"
       const apiUrl = `${endpoint}:8081/claims/analyze?claim=${claim}&ingredients=${ingredients}`;
       setMessage("Request Submitted. Analyzing...");
       // console.log(`Api command sent to ${apiUrl}`)
@@ -61,7 +61,7 @@ function App() {
         console.log(jsondata)
         setVerdictData(jsondata);
         setVerdictEnglishData(jsondata);
-        useState(true);
+        setIsDisabled(false);
         }
         else {
           console.log(response.status)
@@ -84,8 +84,7 @@ function App() {
 
     try {
       console.log(`Sending Request to Backend Translate ${langSelected}`);
-      // let endpoint = "https://consumewise.peopleplus.ai"
-      let endpoint = "http://localhost"
+      
       const apiTranslateUrl = `${endpoint}:8081/translate/indic?input_val=${JSON.stringify(verdictData)}&language=${event.target.value}`;
       setTranslationMessage("Translation Request Submitted. Translating ...");
       const responseWhy = await fetch(apiTranslateUrl,{
