@@ -2,8 +2,8 @@ import logo from './peopleplusai.png';
 import { useState, version } from "react";
 import './App.css';
 import './Tabs.css';
+import Footer from './Footer.js';
 import Content from './ContentTab';
-import Select from "react-dropdown-select"
 
 function App() {
 
@@ -177,7 +177,9 @@ function App() {
       <div className="translatioMessage">{translationMessage ? <p>{translationMessage}</p> : null}</div>
         </div>
       </div>
+      <Footer />
       </header>
+   
     </div>
   );
 }
