@@ -28,7 +28,8 @@ function App() {
   const [langSelected, setLangSelected] = useState("English");
 
   const [isDisabled, setIsDisabled] = useState(true);
-  let endpoint = "https://consumewise.peopleplus.ai"
+  // let endpoint = "https://consumewise.peopleplus.ai"
+  let endpoint = "http://98.70.15.26"
   // let endpoint = "http://localhost"
 
   let handleSubmit = async (e) => {
