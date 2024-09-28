@@ -45,15 +45,7 @@ To run this project, you'll need:
    npm install
    ```
 
-3. **Set up environment variables:**
-
-   Update the `API_ENDPOINT` inside the `App.js` file with your backend API URL if needed:
-
-   ```javascript
-   const API_ENDPOINT = "https://your-api-endpoint-here";
-   ```
-
-4. **Run the development server:**
+3. **Run the development server:**
 
    ```bash
    npm start
@@ -61,7 +53,7 @@ To run this project, you'll need:
 
    This will launch the app in development mode. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-5. **Build the app for production:**
+4. **Build the app for production:**
 
    ```bash
    npm run build
