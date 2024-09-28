@@ -1,185 +1,168 @@
-import logo from './peopleplusai.png';
-import { useState, version } from "react";
-import './App.css';
-import './Tabs.css';
-import Footer from './Footer.js';
-import Content from './ContentTab';
+import logo from './peopleplusai.png'; // Importing the logo image
+import { useState } from "react"; // Importing useState hook from React
+import './App.css'; // Importing custom styles for App
+import './Tabs.css'; // Importing custom styles for Tabs
+import Footer from './Footer.js'; // Importing Footer component
+import Content from './ContentTab'; // Importing ContentTab component
 
 function App() {
-
-  const options = [
-    {value: 'english', text: 'English'},
-    {value: 'hindi', text: 'Hindi'},
-    {value: 'marathi', text: 'Marathi'}
+  // Language options for translation dropdown
+  const languageOptions = [
+    { value: 'english', text: 'English' },
+    { value: 'hindi', text: 'Hindi' },
+    { value: 'marathi', text: 'Marathi' }
   ];
 
-  const [claim, setClaim] = useState("");
-  const [ingredients, setIngredients] = useState("");
-  const [message, setMessage] = useState("")
-  const [translationMessage, setTranslationMessage] = useState("")
-  const [verdictData, setVerdictData] = useState({"verdict":"Please provide input",
-  "why":["Please provide input"],
-  "detailed_analysis":"Please provide input"})
+  // State variables to manage input, messages, and API response data
+  const [claim, setClaim] = useState(""); // User input for product claim
+  const [ingredients, setIngredients] = useState(""); // User input for ingredients
+  const [message, setMessage] = useState(""); // Status message during claim analysis
+  const [translationMessage, setTranslationMessage] = useState(""); // Status message during translation
+  const [verdictData, setVerdictData] = useState({
+    verdict: "Please provide input",
+    why: ["Please provide input"],
+    detailed_analysis: "Please provide input"
+  }); // Verdict data for analysis results
+  const [verdictEnglishData, setVerdictEnglishData] = useState(verdictData); // English version of verdict data for translation fallback
+  const [activeContentIndex, setActiveContentIndex] = useState("verdict"); // Tab navigation state
+  const [langSelected, setLangSelected] = useState("english"); // Currently selected language for translation
+  const [isDisabled, setIsDisabled] = useState(true); // Disable translation dropdown until a valid response is received
 
-  const [verdictEnglishData, setVerdictEnglishData] = useState({"verdict":"Please provide input",
-  "why":["Please provide input"],
-  "detailed_analysis":"Please provide input"})
-  const [activeContentIndex, setActiveContentIndex] = useState("verdict");
-  const [langSelected, setLangSelected] = useState("English");
+  const API_ENDPOINT = "https://consumewise.peopleplus.ai:8081"; // Backend API endpoint
 
-  const [isDisabled, setIsDisabled] = useState(true);
-  let endpoint = "https://consumewise.peopleplus.ai"
-  // let endpoint = "http://localhost"
-
-  let handleSubmit = async (e) => {
-    e.preventDefault();
-    setLangSelected("english")
+  // Helper function to fetch data from API with error handling
+  const fetchData = async (url, setError) => {
     try {
-      console.log("Sending Request to Backend Claims/Analyze");
-      console.log(claim)
-      console.log(ingredients)
-      const apiUrl = `${endpoint}:8081/claims/analyze?claim=${claim}&ingredients=${ingredients}`;
-      setMessage("Request Submitted. Analyzing...");
-      // console.log(`Api command sent to ${apiUrl}`)
-      
-      const response = await fetch(apiUrl,{
+      const response = await fetch(url, {
         method: 'GET',
         mode: 'cors',
         headers: {
-            'Content-Type': 'application/json',
-            // Additional headers if needed
-        },
-    })
-      setMessage("Response Received");
-      if (response.status === 200) {
-        console.log("Successfully Recieved Response")
-        let respData = await response.text()
-        let jsondata = JSON.parse(JSON.parse(respData)) //TODO: Fi x double parsing needed
-  
-        // setVerdict(data.verdict)
-        console.log("Setting Message")
-        console.log(jsondata)
-        setVerdictData(jsondata);
-        setVerdictEnglishData(jsondata);
-        setIsDisabled(false);
+          'Content-Type': 'application/json',
         }
-        else {
-          console.log(response.status)
-          setMessage("Some error occured");
-        }
+      });
 
-    } catch (err) {
-      setMessage("Some error occured");
-      console.log(err);
+      // If response is successful, parse the JSON response
+      if (response.ok) {
+        const responseData = await response.text();
+        return JSON.parse(JSON.parse(responseData));  // Assuming double-parsing is required
+      } else {
+        setError("Some error occurred"); // Set error message if status is not OK
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+      setError("Some error occurred"); // Catch and log errors from API call
     }
   };
 
-  let handleLangChange = async (event)  => {
-    console.log(event.target.value);
-    setLangSelected(event.target.value);
+  // Handle claim form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent form default submission
+    setLangSelected("english"); // Set language to English on form submission
+    setMessage("Request Submitted. Analyzing..."); // Display message while waiting for API response
 
-    if(event.target.value === "english"){
-      setVerdictData(verdictEnglishData)
+    const apiUrl = `${API_ENDPOINT}/claims/analyze?claim=${claim}&ingredients=${ingredients}`; // Construct API URL
+    const data = await fetchData(apiUrl, setMessage); // Fetch claim analysis data from API
+
+    if (data) {
+      // Update state with fetched analysis data
+      setVerdictData(data);
+      setVerdictEnglishData(data); // Set English data for fallback in translation
+      setMessage("Response Received"); // Notify user that response is received
+      setIsDisabled(false); // Enable translation dropdown after successful response
     }
-
-    try {
-      console.log(`Sending Request to Backend Translate ${langSelected}`);
-      
-      const apiTranslateUrl = `${endpoint}:8081/translate/indic?input_val=${JSON.stringify(verdictData)}&language=${event.target.value}`;
-      setTranslationMessage("Translation Request Submitted. Translating ...");
-      const responseWhy = await fetch(apiTranslateUrl,{
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-            'Content-Type': 'application/json',
-            // Additional headers if needed
-        },
-    })
-
-    let respData = await responseWhy.text()
-    console.log(JSON.parse(respData))
-    let jsonTranslateData = JSON.parse(JSON.parse(respData))
-    
-    setVerdictData(jsonTranslateData);
-    console.log(`Post setup ${langSelected}`)  
-      
-
-    } catch (err) {
-      setTranslationMessage("Translation Error Occurred");
-      console.log(err);
-    }
-    setTranslationMessage("Translated Successfully.")
   };
 
+  // Handle language change for translation
+  const handleLangChange = async (event) => {
+    const selectedLang = event.target.value; // Get selected language from dropdown
+    setLangSelected(selectedLang); // Set selected language in state
+
+    // If English is selected, show English data without translation
+    if (selectedLang === "english") {
+      setVerdictData(verdictEnglishData);
+      return;
+    }
+
+    setTranslationMessage("Translation Request Submitted. Translating..."); // Notify user translation is in progress
+    const translationUrl = `${API_ENDPOINT}/translate/indic?input_val=${JSON.stringify(verdictData)}&language=${selectedLang}`; // Construct API URL for translation
+    const translatedData = await fetchData(translationUrl, setTranslationMessage); // Fetch translation data from API
+
+    if (translatedData) {
+      setVerdictData(translatedData); // Update state with translated data
+      setTranslationMessage("Translated Successfully."); // Notify user that translation is done
+    }
+  };
 
   return (
     <div className="App">
-      
       <header className="App-header">
+        {/* Logo */}
         <img src={logo} className="people-logo" alt="logo" />
-        
+
+        {/* Claim Form */}
         <form id="claimsForm" onSubmit={handleSubmit}>
-          <input className="input_box" type="text" id="claim_input" 
-          placeholder="Enter Product Claim [Healthy, Nutritional etc]"
-          onChange={(e) => setClaim(e.target.value)}
-          >
-          </input>
-          <br></br>
-          <input className="input_box" type="text" id="ingredient_input" 
-          placeholder="Enter Ingredients"
-          onChange={(e) => setIngredients(e.target.value)}
-          >
-          </input>
-          <br></br>
-          <button type="submit">Submit</button>
-        </form>
-        <div className="message">{message ? <p>{message}</p> : null}</div>
-     
-
-      <div id="tabs">
-        <menu>
-          <button
-            className={activeContentIndex === "verdict" ? "active" : ""}
-            onClick={() => setActiveContentIndex("verdict")}
-          >
-            Verdict
-          </button>
-          <button
-            className={activeContentIndex === "why" ? "active" : ""}
-            onClick={() => setActiveContentIndex("why")}
-          >
-            Why?
-          </button>
-          <button
-            className={activeContentIndex === "detailed_analysis" ? "active" : ""}
-            onClick={() => setActiveContentIndex("detailed_analysis")}
-          >
-            Detailed Information
-          </button>
-        </menu>
-        <div id="tab-content">
-          <ul>
-          <Content
-          index={activeContentIndex}
-          jsonData={verdictData}
+          <input
+            className="input_box"
+            type="text"
+            id="claim_input"
+            placeholder="Enter Product Claim [Healthy, Nutritional etc]"
+            value={claim}
+            onChange={(e) => setClaim(e.target.value)} // Update claim state on input change
           />
-          </ul>
-        </div>
-        <div>
+          <br />
+          <input
+            className="input_box"
+            type="text"
+            id="ingredient_input"
+            placeholder="Enter Ingredients"
+            value={ingredients}
+            onChange={(e) => setIngredients(e.target.value)} // Update ingredients state on input change
+          />
+          <br />
+          <button type="submit">Submit</button> {/* Submit button to trigger form submission */}
+        </form>
+        
+        {/* Display status messages */}
+        {message && <div className="message"><p>{message}</p></div>}
 
-        <select value={langSelected} onChange={handleLangChange} disabled={isDisabled}>
-        {options.map(option => (
-          <option key={option.value} value={option.value}>
-            {option.text}
-          </option>
-        ))}
-      </select>
-      <div className="translatioMessage">{translationMessage ? <p>{translationMessage}</p> : null}</div>
+        {/* Tab Navigation */}
+        <div id="tabs">
+          <menu>
+            {/* Tab buttons */}
+            {["verdict", "why", "detailed_analysis"].map((tab) => (
+              <button
+                key={tab}
+                className={activeContentIndex === tab ? "active" : ""}
+                onClick={() => setActiveContentIndex(tab)} // Switch tabs on click
+              >
+                {tab === "verdict" ? "Verdict" : tab === "why" ? "Why?" : "Detailed Information"}
+              </button>
+            ))}
+          </menu>
+
+          {/* Tab Content */}
+          <div id="tab-content">
+            <Content index={activeContentIndex} jsonData={verdictData} /> {/* Display the content of the active tab */}
+          </div>
+
+          {/* Language Selector */}
+          <div>
+            <select value={langSelected} onChange={handleLangChange} disabled={isDisabled}> {/* Disable dropdown if no data */}
+              {languageOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.text}
+                </option>
+              ))}
+            </select>
+
+            {/* Translation status messages */}
+            {translationMessage && <div className="translationMessage"><p>{translationMessage}</p></div>}
+          </div>
         </div>
-      </div>
-      <Footer />
+
+        {/* Footer component */}
+        <Footer />
       </header>
-   
     </div>
   );
 }
