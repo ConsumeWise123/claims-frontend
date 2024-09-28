@@ -35,8 +35,8 @@ To run this project, you'll need:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-username/peopleplus-ai-product-claim-analyzer.git
-   cd peopleplus-ai-product-claim-analyzer
+   git clone https://github.com/ConsumeWise123/claims-frontend.git
+   cd claims-frontend
    ```
 
 2. **Install dependencies:**
