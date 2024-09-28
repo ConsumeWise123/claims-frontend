@@ -36,7 +36,7 @@ To run this project, you'll need:
 
    ```bash
    git clone https://github.com/ConsumeWise123/claims-frontend.git
-   cd claims-frontend
+   cd claims-frontend/claims-app
    ```
 
 2. **Install dependencies:**
