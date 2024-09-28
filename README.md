@@ -11,7 +11,7 @@ This is a React application that helps users analyze product claims and ingredie
 
 ## Screenshots
 
-![App Screenshot](path-to-screenshot.png) <!-- Replace this with a path to your screenshot -->
+Will be updated soon!
 
 ## Technologies Used
 
