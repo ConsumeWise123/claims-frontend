@@ -6,13 +6,15 @@ import Footer from './Footer.js';
 import Content from './ContentTab';
 
 function App() {
-
+  
+  // Language options for translation dropdown
   const options = [
     {value: 'english', text: 'English'},
     {value: 'hindi', text: 'Hindi'},
     {value: 'marathi', text: 'Marathi'}
   ];
 
+  // State variables to manage input, messages, and API response data
   const [claim, setClaim] = useState("");
   const [ingredients, setIngredients] = useState("");
   const [message, setMessage] = useState("")
@@ -29,8 +31,8 @@ function App() {
 
   const [isDisabled, setIsDisabled] = useState(true);
   let endpoint = "https://consumewise.peopleplus.ai"
-  // let endpoint = "http://localhost"
 
+  // Handle claim form submission
   let handleSubmit = async (e) => {
     e.preventDefault();
     setLangSelected("english")
@@ -74,10 +76,12 @@ function App() {
     }
   };
 
+  // Handle language change for translation
   let handleLangChange = async (event)  => {
     console.log(event.target.value);
     setLangSelected(event.target.value);
 
+    // If English is selected, show English data without translation
     if(event.target.value === "english"){
       setVerdictData(verdictEnglishData)
     }
