@@ -13,7 +13,7 @@ function Footer() {
     
     This prototype is developed as part of a fellowship program offered by EkStep Foundation through its People+ai initiative. EkStep Foundation disclaims all liability for any loss or damage arising from the use of this prototype. By using this prototype, you acknowledge and agree to these terms and release us from any and all related liability.
     
-    For queries, please contact us at sonika@peopleplus.ai
+    For queries, please contact us at  info@ekstep.org
     </a>
     </footer>;
 }
